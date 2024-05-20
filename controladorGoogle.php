@@ -1,15 +1,14 @@
-
+<?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-<?php
-require_once 'vendor/autoload.php';
 
 session_start();
+require_once 'vendor/autoload.php';
 
 $client = new Google_Client();
-$client->setClientId('');
-$client->setClientSecret('');
+$client->setClientId('631022063904-0n6jn3vcl53bi1gp1urp0o721ef0q2p0.apps.googleusercontent.com');
+$client->setClientSecret('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');
 $client->setRedirectUri('https://animalresort.com.co/services/controladorGoogle.php');
 
 if (isset($_GET['code'])) {
@@ -23,10 +22,11 @@ if (isset($_GET['code'])) {
     $oauth2 = new Google_Service_Oauth2($client);
     $userInfo = $oauth2->userinfo->get();
     $email = $userInfo->email;
+    $givenName = $userInfo->givenName;
+    $familyName = $userInfo->familyName;
+    $nombre = $givenName . ' ' . $familyName;
 
     // Conectar a la base de datos
-    
-
     $conexion = new mysqli("localhost", "animalre", "y367}A]y){K4Cg4", "animalre_database");
 
     // Verificar la conexión
@@ -35,7 +35,6 @@ if (isset($_GET['code'])) {
     }
 
     $usuario = $conexion->real_escape_string($email);
-
     $sql = $conexion->query("SELECT * FROM Usuarios WHERE email='$usuario'");
 
     if ($datos = $sql->fetch_object()) {
@@ -43,11 +42,14 @@ if (isset($_GET['code'])) {
         header("Location: inicio.html");
         exit();
     } else {
-       echo "<script>
-                alert('Usuario no encontrado, Por favor entre con una cuenta registrada');
+        echo "<script>
+            var confirmacion = confirm('Cuenta no encontrada, ¿desea registrarse?');
+            if (confirmacion) {
+                window.location.href = 'registro.php?nombre=" . urlencode($nombre) . "&email=" . urlencode($email) . "';
+            } else {
                 window.location.href = 'index.php';
-              </script>";
-        
+            }
+        </script>";
     }
 
     $conexion->close();
