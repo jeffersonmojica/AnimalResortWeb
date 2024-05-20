@@ -6,8 +6,8 @@ error_reporting(E_ALL);
 session_start();
 
 $client = new Google_Client();
-$client->setClientId('631022063904-0n6jn3vcl53bi1gp1urp0o721ef0q2p0.apps.googleusercontent.com');
-$client->setClientSecret('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');
+$client->setClientId('');
+$client->setClientSecret('');
 $client->setRedirectUri('https://animalresort.com.co/services/controladorGoogle.php');
 $client->addScope("email");
 
@@ -28,12 +28,12 @@ $authUrl = $client->createAuthUrl();
             background: #9dcd55;
             background: linear-gradient(to right, #3c8735, #9dcd55);
         }
-        /* Estilo para el bot¨®n de inicio de sesi¨®n */
+        /* Estilo para el botï¿½ï¿½n de inicio de sesiï¿½ï¿½n */
     .center-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px; /* Ajusta el margen superior seg¨²n sea necesario */
+    margin-top: 20px; /* Ajusta el margen superior segï¿½ï¿½n sea necesario */
    }
     .google-login-btn {
       background-color: #35e850;

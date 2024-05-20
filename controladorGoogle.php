@@ -8,8 +8,8 @@ require_once 'vendor/autoload.php';
 session_start();
 
 $client = new Google_Client();
-$client->setClientId('631022063904-0n6jn3vcl53bi1gp1urp0o721ef0q2p0.apps.googleusercontent.com');
-$client->setClientSecret('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');
+$client->setClientId('');
+$client->setClientSecret('');
 $client->setRedirectUri('https://animalresort.com.co/services/controladorGoogle.php');
 
 if (isset($_GET['code'])) {
