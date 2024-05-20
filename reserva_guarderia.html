@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guardería</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <!-- Incluye la versión específica de Flatpickr -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.css"
+    />
+
+    <style>
+      .banner {
+        text-align: center;
+      }
+
+      .h2 {
+        text-align: center;
+        color: #ffffff;
+        font-size: 50px;
+        -webkit-text-stroke: 2px #3c8735;
+        text-stroke: 2px #3c8735;
+        padding: 10px;
+      }
+
+      body {
+        background-color: #9dcd55;
+      }
+
+      /* Estilos para el calendario */
+      #calendario {
+        margin: 20px auto;
+        max-width: 800px; /* O el ancho deseado para tu calendario */
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center; /* Centrar el contenido dentro del contenedor */
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        text-align: center;
+        padding: 10px;
+        border: 1px solid #dddddd;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+      .info-direccion {   
+        width: 100%;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .info-mascotas {
+        width: 100%;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+  .info-mascotas {
+    display: flex;
+    flex-direction: column; /* Cambia la dirección a columna para disposición vertical */
+  }
+ 
+  .info-resumen {
+        width: 100%;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+      }
+
+  .checkbox-container {
+    margin-bottom: 10px; /* Agrega un espacio entre cada checkbox y label */
+  }
+    </style>
+  </head>
+
+  <body>
+    <div class="banner">
+      <img src="logoAnimalR.png" />
+    </div>
+
+    <h2 class="h2">GUARDERIA</h2>
+
+    <!-- Calendario -->
+    <div id="calendario">
+      <div id="diasSeleccionados">Días: 0</div>
+      <input
+        type="text"
+        id="fechaSeleccionada"
+        class="form-control"
+        placeholder="Seleccione las fechas"
+      />
+    </div>
+
+    <div class="info-direccion" id="direccionInfo"></div>
+
+    <div class="info-mascotas" id="mascotas">
+      <a>Selecciona tus mascotas</a>
+    </div>
+
+    <div class="info-resumen" id="resumen">
+      <a>Resumen: </a><br>
+      <a>Número de mascotas: <span id="numMascotas">0</span></a><br>
+      <a>Días seleccionados: <span id="cantDias">0</span></a><br>
+      <a>Precio diario: $<span id="precioDia">20000</span></a><br>
+      <a>Precio diario con descuento: $<span id="precioDescuento">0</span></a><br>
+      <a>Precio total: $<span id="precioTotal">0</span></a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+if (!document.cookie.includes('usuario_id')) {
+      alert('Sesión expirada, inicie nuevamente');
+      window.location.href = 'index.php';
+    }
+      document.addEventListener("DOMContentLoaded", function () {
+        var fechaSeleccionada = document.getElementById("fechaSeleccionada");
+        var diasSeleccionados = document.getElementById("diasSeleccionados");
+        var direccionInfo = document.getElementById("direccionInfo");
+        var fechasElegidas = []; //
+
+        var calendar = flatpickr(fechaSeleccionada, {
+          mode: "multiple",
+          minDate: "today",
+          maxDate: new Date().fp_incr(31),
+          dateFormat: "Y-m-d",
+          onChange: function (selectedDates, dateStr, instance) {
+            fechasElegidas = selectedDates.map(function (date) {
+        return date.toISOString().split("T")[0];
+      });
+            diasSeleccionados.textContent = "Días: " + fechasElegidas.length;
+            console.log("fechas: ",fechasElegidas); //despues borro esta linea, o la comento, solo se usa para ver que el formato sea el correcto
+            actualizarResumen();
+          },
+        });
+
+        $.ajax({
+          url: "reserva_direccion.php",
+          dataType: "json",
+          success: function (data) {
+            var direccionHtml =
+              "Dirección de domicilio: <br>" +
+              data[0].ciudad +
+              ", " +
+              data[0].direccion;
+            direccionInfo.innerHTML = direccionHtml;
+          },
+          error: function () {
+            console.log("Error al obtener los datos direccion.");
+          },
+        });
+
+        $.ajax({
+  url: "reserva_mascota.php",
+  dataType: "json",
+  success: function (data) {
+    var mascotasContainer = $(".info-mascotas");
+
+    data.forEach(function (item) {
+      var nombre_mascota = item.nombre_mascota;
+      var id_mascota = item.id;
+      var checkbox = $('<input type="checkbox">').attr({
+        value: nombre_mascota,
+        id: id_mascota,
+      });
+
+      var label = $('<label>').attr('for', 'checkbox_' + nombre_mascota).text(nombre_mascota);
+      var checkboxContainer = $('<div>').addClass('checkbox-container');
+
+      checkboxContainer.append(label);
+      checkboxContainer.append(checkbox);
+      mascotasContainer.append(checkboxContainer);
+    });
+  },
+  error: function () {
+    console.log("Error al obtener los datos de las mascotas.");
+  },
+});
+
+function actualizarResumen() {
+          var numMascotas = $("input[type=checkbox]:checked").length;
+          var cantDias = fechasElegidas.length;
+          var precioDia = 20000; // Precio por día (ajústalo según tus necesidades)
+          var precioDescuento = 0; // Precio con descuento (ajústalo según tus necesidades)
+
+          var precioTotal = cantDias * numMascotas * (precioDia - precioDescuento);
+          // Si no hay fechas seleccionadas o mascotas, el precio total es cero
+          if (cantDias === 0 || numMascotas === 0) {
+            precioTotal = 0;
+          }
+
+          // Actualizar elementos en el resumen
+          $("#numMascotas").text(numMascotas);
+          $("#cantDias").text(cantDias);
+          $("#precioDia").text(precioDia);
+          $("#precioDescuento").text(precioDescuento);
+          $("#precioTotal").text(precioTotal);
+        }
+
+$(document).on("change", 'input[type="checkbox"]', function () {
+    actualizarMascotasSeleccionadas();
+    actualizarResumen();
+  });
+
+  function actualizarMascotasSeleccionadas() {
+    var mascotasSeleccionadas = []; //
+    $("input[type=checkbox]:checked").each(function () {
+      mascotasSeleccionadas.push(this.id);
+    });
+    console.log("Mascotas seleccionadas:", mascotasSeleccionadas);//solo se usa para ver los id almacenados y verificar que sea dinamico el check
+  }
+
+      });
+
+    </script>
+  </body>
+</html>
