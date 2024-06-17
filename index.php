@@ -1,14 +1,14 @@
 <?php
-require_once 'vendor/autoload.php';
+require_once 'auth-service/vendor/autoload.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
 $client = new Google_Client();
-$client->setClientId('');
-$client->setClientSecret('');
-$client->setRedirectUri('https://animalresort.com.co/services/controladorGoogle.php');
+$client->setClientId('631022063904-0n6jn3vcl53bi1gp1urp0o721ef0q2p0.apps.googleusercontent.com');
+$client->setClientSecret('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');
+$client->setRedirectUri('https://animalresort.com.co/web/auth-service/controladorGoogle.php');
 $client->addScope("email");
 
 $authUrl = $client->createAuthUrl();
@@ -63,7 +63,7 @@ $authUrl = $client->createAuthUrl();
         <div class="row aling-items-stretch">
             <div class="col bg-white p-5 rounded">
                 <div style="text-align: center;">
-                    <img src="logoAnimalR.png" width="48" alt="">
+                    <img src="statics/logoAnimalR.png" width="48" alt="">
                 </div>
 
                 <h2 class="fw-bold text-center py-5">Bienvenido</h2>
@@ -72,8 +72,8 @@ $authUrl = $client->createAuthUrl();
                     
                     <div>
                          <?php
-                          include("conexion.php");
-                         include("controlador.php");
+                          include("auth-service/conexion.php");
+                         include("auth-service/controlador.php");
                         ?>
 
                          <div class="mb-4">
@@ -89,7 +89,7 @@ $authUrl = $client->createAuthUrl();
 
                          <div class="center-container">
                              <?php
-                          include("conexion.php");
+                          include("auth-service/conexion.php");
                         ?>
                             <div class="google-login-btn">
                              
@@ -100,12 +100,6 @@ $authUrl = $client->createAuthUrl();
                             </div>
                          </div>
                     </div>
-
-                   
-                   
-                   
-                   
-                   
 
                 </form>
 
